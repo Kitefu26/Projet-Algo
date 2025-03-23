@@ -3,12 +3,13 @@ package view;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos; // Add this import statement
+
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
@@ -25,10 +26,11 @@ public class MazeApplication extends Application {
     private MazeSolver solver;
     private Canvas mazeCanvas;
     private GraphicsContext gc;
-    private int cellSize = 30;
+    private int cellSize = 20;
     private Label statusLabel;
     private String currentMazeName = "Labyrinthe";
-    private boolean[][] path;   
+    private boolean[][] path;  
+    
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Résolution de Labyrinthe");
@@ -37,8 +39,9 @@ public class MazeApplication extends Application {
         BorderPane root = new BorderPane();
         
         // Section supérieure avec les boutons
-        HBox topBar = createTopBar(primaryStage);
-        root.setTop(topBar);
+        VBox leftBar = createLeftBar(primaryStage);
+        root.setLeft(leftBar);
+
         
         // Zone centrale avec le canvas
         mazeCanvas = new Canvas(800, 600);
@@ -55,9 +58,13 @@ public class MazeApplication extends Application {
         primaryStage.show();
     }
     
-    private HBox createTopBar(Stage stage) {
-        HBox topBar = new HBox(10);
-        topBar.setPadding(new Insets(10));
+private VBox createLeftBar(Stage stage) {
+        VBox leftBar = new VBox(10);
+        leftBar.setAlignment(Pos.TOP_LEFT); // Align buttons to the left
+
+
+        leftBar.setPadding(new Insets(10));
+
         
         Button loadButton = new Button("Charger un labyrinthe");
         loadButton.setOnAction(e -> loadMazeFromFile(stage));
@@ -166,9 +173,10 @@ public class MazeApplication extends Application {
             }
         });
         
-        topBar.getChildren().addAll(loadButton, generateButton, solveDFSButton, solveBFSButton, 
+        leftBar.getChildren().addAll(loadButton, generateButton, solveDFSButton, solveBFSButton, 
                                     animateDFSButton, animateBFSButton, compareButton, clearButton);
-        return topBar;
+        return leftBar;
+
     }
     
     private void loadMazeFromFile(Stage stage) {
@@ -233,6 +241,7 @@ public class MazeApplication extends Application {
             int cols = dimensions[1];
             
             maze = new Maze(rows, cols);
+            maze.getGrid()[rows-2][cols-2] = 'E';
             solver = new MazeSolver(maze);
             resizeCanvas();
             drawMazeOnly();
