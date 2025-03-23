@@ -173,7 +173,7 @@ public class MazeApplication extends Application {
             }
         });
         
-        leftBar.getChildren().addAll(loadButton, generateButton, solveDFSButton, solveBFSButton, 
+        leftBar.getChildren().addAll(generateButton, loadButton, solveDFSButton, solveBFSButton, 
                                     animateDFSButton, animateBFSButton, compareButton, clearButton);
         return leftBar;
 
