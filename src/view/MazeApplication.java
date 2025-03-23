@@ -18,6 +18,7 @@ import model.MazeSolver;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
 public class MazeApplication extends Application {
     private Maze maze;
@@ -26,7 +27,8 @@ public class MazeApplication extends Application {
     private GraphicsContext gc;
     private int cellSize = 30;
     private Label statusLabel;
-    
+    private String currentMazeName = "Labyrinthe";
+    private boolean[][] path;   
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Résolution de Labyrinthe");
@@ -68,7 +70,7 @@ public class MazeApplication extends Application {
             if (maze != null && solver != null) {
                 boolean solved = solver.solveDFS();
                 drawMaze();
-                updateStatus("DFS", solved, solver.getSteps());
+                updateStatus("DFS", solved, solver.getSteps(), solver.getExecutionTime());
             } else {
                 statusLabel.setText("Veuillez d'abord créer ou charger un labyrinthe.");
             }
@@ -79,7 +81,7 @@ public class MazeApplication extends Application {
             if (maze != null && solver != null) {
                 boolean solved = solver.solveBFS();
                 drawMaze();
-                updateStatus("BFS", solved, solver.getSteps());
+                updateStatus("BFS", solved, solver.getSteps(), solver.getExecutionTime());
             } else {
                 statusLabel.setText("Veuillez d'abord créer ou charger un labyrinthe.");
             }
@@ -93,7 +95,7 @@ public class MazeApplication extends Application {
                     Platform.runLater(() -> {
                         drawMazeWithAnimation(solverState);
                         if (solverState.isSolutionFound()) {
-                            updateStatus("DFS", true, solverState.getSteps());
+                            updateStatus("DFS", true, solverState.getSteps(), solverState.getExecutionTime());
                         } else {
                             statusLabel.setText("Animation DFS en cours... Étapes: " + solverState.getSteps());
                         }
@@ -112,12 +114,45 @@ public class MazeApplication extends Application {
                     Platform.runLater(() -> {
                         drawMazeWithAnimation(solverState);
                         if (solverState.isSolutionFound()) {
-                            updateStatus("BFS", true, solverState.getSteps());
+                            updateStatus("BFS", true, solverState.getSteps(), solverState.getExecutionTime());
                         } else {
                             statusLabel.setText("Animation BFS en cours... Étapes: " + solverState.getSteps());
                         }
                     })
                 );
+            } else {
+                statusLabel.setText("Veuillez d'abord créer ou charger un labyrinthe.");
+            }
+        });
+
+        // Nouveau bouton pour la comparaison
+        Button compareButton = new Button("Comparer les algorithmes");
+        compareButton.setOnAction(e -> {
+            if (maze != null && solver != null) {
+                statusLabel.setText("Comparaison des algorithmes en cours...");
+                
+                // Exécuter la comparaison dans un thread séparé pour ne pas bloquer l'interface
+                new Thread(() -> {
+                    Map<String, Object> results = solver.compareAlgorithms();
+                    
+                    Platform.runLater(() -> {
+                        // Afficher la fenêtre de comparaison
+                        ComparatorView.showComparison(
+                            currentMazeName,
+                            (long) results.get("dfsTime"),
+                            (long) results.get("bfsTime"),
+                            (int) results.get("dfsSteps"),
+                            (int) results.get("bfsSteps"),
+                            (boolean) results.get("dfsSolved"),
+                            (boolean) results.get("bfsSolved")
+                        );
+                        
+                        // Dessiner le chemin BFS (généralement le plus optimal)
+                        path = (boolean[][]) results.get("bfsPath");
+                        drawMaze();
+                        statusLabel.setText("Comparaison effectuée. Affichage du chemin BFS.");
+                    });
+                }).start();
             } else {
                 statusLabel.setText("Veuillez d'abord créer ou charger un labyrinthe.");
             }
@@ -132,7 +167,7 @@ public class MazeApplication extends Application {
         });
         
         topBar.getChildren().addAll(loadButton, generateButton, solveDFSButton, solveBFSButton, 
-                                    animateDFSButton, animateBFSButton, clearButton);
+                                    animateDFSButton, animateBFSButton, compareButton, clearButton);
         return topBar;
     }
     
@@ -358,9 +393,9 @@ public class MazeApplication extends Application {
         }
     }
     
-    private void updateStatus(String algorithm, boolean solved, int steps) {
+    private void updateStatus(String algorithm, boolean solved, int steps, long time) {
         if (solved) {
-            statusLabel.setText("Solution trouvée avec " + algorithm + " en " + steps + " étapes.");
+            statusLabel.setText("Solution trouvée avec " + algorithm + " en " + steps + " étapes et " + time + " ms.");
         } else {
             statusLabel.setText("Aucune solution trouvée avec " + algorithm + ".");
         }

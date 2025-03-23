@@ -10,6 +10,7 @@ public class MazeSolver {
     private boolean[][] currentExploration;
     private int steps;
     private boolean solutionFound;
+    private long executionTime;
     
     public MazeSolver(Maze maze) {
         this.maze = maze;
@@ -314,6 +315,41 @@ public class MazeSolver {
         
         return found;
     }
+
+    // Méthode pour comparaison directe
+    public Map<String, Object> compareAlgorithms() {
+        Map<String, Object> results = new HashMap<>();
+        
+        // Exécuter DFS
+        boolean dfsSolved = solveDFS();
+        long dfsTime = this.executionTime;
+        int dfsSteps = this.steps;
+        boolean[][] dfsPath = new boolean[maze.getRows()][maze.getCols()];
+        for (int i = 0; i < maze.getRows(); i++) {
+            dfsPath[i] = Arrays.copyOf(path[i], maze.getCols());
+        }
+        
+        // Exécuter BFS
+        boolean bfsSolved = solveBFS();
+        long bfsTime = this.executionTime;
+        int bfsSteps = this.steps;
+        boolean[][] bfsPath = new boolean[maze.getRows()][maze.getCols()];
+        for (int i = 0; i < maze.getRows(); i++) {
+            bfsPath[i] = Arrays.copyOf(path[i], maze.getCols());
+        }
+        
+        // Stocker les résultats
+        results.put("dfsTime", dfsTime);
+        results.put("bfsTime", bfsTime);
+        results.put("dfsSteps", dfsSteps);
+        results.put("bfsSteps", bfsSteps);
+        results.put("dfsSolved", dfsSolved);
+        results.put("bfsSolved", bfsSolved);
+        results.put("dfsPath", dfsPath);
+        results.put("bfsPath", bfsPath);
+        
+        return results;
+    }
     
     // Getters
     public boolean[][] getPath() {
@@ -335,4 +371,9 @@ public class MazeSolver {
     public boolean isSolutionFound() {
         return solutionFound;
     }
+
+    public long getExecutionTime() {
+        return executionTime;
+    }
 }
+
