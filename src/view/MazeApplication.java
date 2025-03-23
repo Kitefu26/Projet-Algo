@@ -29,16 +29,16 @@ public class MazeApplication extends Application {
     private int cellSize = 20;
     private Label statusLabel;
     private String currentMazeName = "Labyrinthe";
+    @SuppressWarnings("unused")
     private boolean[][] path;  
     
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Résolution de Labyrinthe");
         
-        // Créer les composants JavaFX
+        // Création des composants
         BorderPane root = new BorderPane();
         
-        // Section supérieure avec les boutons
         VBox leftBar = createLeftBar(primaryStage);
         root.setLeft(leftBar);
 
@@ -58,7 +58,7 @@ public class MazeApplication extends Application {
         primaryStage.show();
     }
     
-private VBox createLeftBar(Stage stage) {
+    private VBox createLeftBar(Stage stage) {
         VBox leftBar = new VBox(10);
         leftBar.setAlignment(Pos.TOP_LEFT); // Align buttons to the left
 
@@ -173,7 +173,7 @@ private VBox createLeftBar(Stage stage) {
             }
         });
         
-        leftBar.getChildren().addAll(loadButton, generateButton, solveDFSButton, solveBFSButton, 
+        leftBar.getChildren().addAll(generateButton, loadButton, solveDFSButton, solveBFSButton, 
                                     animateDFSButton, animateBFSButton, compareButton, clearButton);
         return leftBar;
 
@@ -241,7 +241,6 @@ private VBox createLeftBar(Stage stage) {
             int cols = dimensions[1];
             
             maze = new Maze(rows, cols);
-            maze.getGrid()[rows-2][cols-2] = 'E';
             solver = new MazeSolver(maze);
             resizeCanvas();
             drawMazeOnly();
@@ -288,7 +287,7 @@ private VBox createLeftBar(Stage stage) {
                         gc.setFill(Color.RED);
                         gc.fillRect(x, y, cellSize, cellSize);
                         gc.setFill(Color.BLACK);
-                        gc.fillText("E", x + cellSize/2 - 5, y + cellSize/2 + 5);
+                        gc.fillText("E", x + cellSize/2, y + cellSize/2);
                         break;
                 }
                 

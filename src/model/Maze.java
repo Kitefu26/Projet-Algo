@@ -11,6 +11,34 @@ public class Maze {
     private int cols;
     private Position start;
     private Position end;
+
+    public char[][] getGrid() {
+        return grid;
+    }
+    
+    public int getRows() {
+        return rows;
+    }
+    
+    public int getCols() {
+        return cols;
+    }
+    
+    public Position getStart() {
+        return start;
+    }
+    
+    public Position getEnd() {
+        return end;
+    }
+    
+    public boolean isWall(int row, int col) {
+        return grid[row][col] == '#';
+    }
+    
+    public boolean isPath(int row, int col) {
+        return grid[row][col] == '=' || grid[row][col] == 'S' || grid[row][col] == 'E';
+    }
     
     // Constructeur pour un labyrinthe à partir d'un fichier
     public Maze(String filePath) throws IOException {
@@ -91,18 +119,15 @@ public class Maze {
         start = new Position(startRow, 1);
         end = new Position(endRow, cols - 2);
         
-        // S'assurer qu'il existe au moins un chemin possible (implémentation simplifiée)
         ensurePathExists();
     }
     
-    // Méthode simple pour assurer qu'il existe un chemin (pour la démo)
     private void ensurePathExists() {
-        // Créer un chemin horizontal depuis S
+
         for (int j = start.getCol() + 1; j < cols - 1; j++) {
             grid[start.getRow()][j] = '=';
         }
         
-        // Créer un chemin vertical vers E
         int minRow = Math.min(start.getRow(), end.getRow());
         int maxRow = Math.max(start.getRow(), end.getRow());
         
@@ -111,7 +136,6 @@ public class Maze {
         }
     }
     
-    // Affichage du labyrinthe
     public void printMaze() {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
@@ -121,7 +145,6 @@ public class Maze {
         }
     }
     
-    // Affichage du labyrinthe avec le chemin de solution
     public void printSolution(boolean[][] path) {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
@@ -134,35 +157,7 @@ public class Maze {
             System.out.println();
         }
     }
-    
-    // Getters et setters
-    public char[][] getGrid() {
-        return grid;
-    }
-    
-    public int getRows() {
-        return rows;
-    }
-    
-    public int getCols() {
-        return cols;
-    }
-    
-    public Position getStart() {
-        return start;
-    }
-    
-    public Position getEnd() {
-        return end;
-    }
-    
-    public boolean isWall(int row, int col) {
-        return grid[row][col] == '#';
-    }
-    
-    public boolean isPath(int row, int col) {
-        return grid[row][col] == '=' || grid[row][col] == 'S' || grid[row][col] == 'E';
-    }
+
 }
 
 // Classe pour représenter une position dans le labyrinthe
